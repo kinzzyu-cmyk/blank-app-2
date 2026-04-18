@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # 데이터 로드
-df = pd.read_csv('data.csv')
+df = pd.read_csv('data.csv', encoding='utf-8')
 
 # 종속변수 계산 (주제 1)
 df['AI_활용'] = (df['15-1. 나는 생성형 AI를 이용해서 새로운 생각이나 아이디어를 만들어낼 수 있다.'] + 
@@ -72,7 +72,7 @@ st.text(model.summary())
 # 시각화: 산점도
 fig, ax = plt.subplots()
 sns.scatterplot(data=df, x='창의성', y='AI_활용', ax=ax)
-ax.set_title('창의성 vs AI 활용 능력')
+ax.set_title('Creativity vs AI Utilization Ability')
 st.pyplot(fig)
 
 # 주제 2: 로지스틱 회귀분석
@@ -94,5 +94,5 @@ st.write(f"정확도: {log_model.score(X_log, y_log)}")
 # 시각화: 박스플롯
 fig2, ax2 = plt.subplots()
 sns.boxplot(data=df, x='고숙련_AI', y='디지털_윤리', ax=ax2)
-ax2.set_title('고숙련 AI 사용자 vs 디지털 윤리')
+ax2.set_title('High-Skilled AI User vs Digital Ethics')
 st.pyplot(fig2)
