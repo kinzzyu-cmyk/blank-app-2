@@ -121,25 +121,13 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 그룹 필터
-group_option = st.selectbox(
-    "그룹 필터",
-    ["전체", "AI 활용 상위 50%", "AI 활용 하위 50%", "디지털 숙련도 높음", "디지털 숙련도 낮음"]
-)
-
-if group_option == "전체":
-    filtered_df = df.copy()
-elif group_option in ["AI 활용 상위 50%", "AI 활용 하위 50%"]:
-    filtered_df = df[df['AI_활용_그룹'] == group_option]
-else:
-    filtered_df = df[df['디지털_숙련도_그룹'] == group_option]
-
 # 탭 메뉴
 tab1, tab2, tab3, tab4 = st.tabs(["데이터 요약", "주제 1", "주제 2", "What if"])
 
 with tab1:
+    filtered_df = df.copy()
     st.header("데이터 요약")
-    st.write(f"선택된 그룹: **{group_option}** (응답자 {len(filtered_df)}명)")
+    st.write(f"선택된 그룹: **전체** (응답자 {len(filtered_df)}명)")
     st.subheader("기초 통계")
     st.write(filtered_df[['창의성', '문제해결력', '디지털_숙련도', 'AI_활용']].describe().T)
     st.subheader("결측치")
@@ -150,6 +138,7 @@ with tab1:
         st.write("결측치가 없습니다.")
 
 with tab2:
+    filtered_df = df.copy()
     st.header("주제 1: 다중선형 회귀분석")
     st.write("3D 패션 전공 학생들의 창의성 및 디지털 숙련도가 생성형 AI 창의적 활용 능력에 미치는 영향 분석")
     st.write("종속변수: 생성형 AI 활용 능력 (15-1~15-3 평균 점수)")
@@ -171,6 +160,7 @@ with tab2:
     st.pyplot(fig)
 
 with tab3:
+    filtered_df = df.copy()
     st.header("주제 2: 로지스틱 회귀분석")
     st.write("디지털 윤리 의식과 자기주도적 학습 태도가 '고숙련 AI 사용자' 여부를 결정짓는가?")
     st.write("종속변수: 고숙련 AI 사용자 여부 (AI 활용 점수 중앙값 이상인 경우 1, 미만인 경우 0)")
@@ -191,11 +181,27 @@ with tab3:
     ax2.set_title('High-skilled AI User vs Digital Ethics')
     ax2.set_xlabel('High-skilled AI User')
     ax2.set_ylabel('Digital Ethics')
+    ax2.set_xlabel('High-skilled AI User')
+    ax2.set_ylabel('Digital Ethics')
     st.pyplot(fig2)
 
 with tab4:
     st.header("실시간 예측 (What-if)")
     st.write("슬라이더로 디지털 숙련도를 조절하며 AI 활용 점수를 예측합니다.")
+    
+    # 그룹 필터
+    group_option = st.selectbox(
+        "그룹 필터",
+        ["전체", "AI 활용 상위 50%", "AI 활용 하위 50%", "디지털 숙련도 높음", "디지털 숙련도 낮음"]
+    )
+
+    if group_option == "전체":
+        filtered_df = df.copy()
+    elif group_option in ["AI 활용 상위 50%", "AI 활용 하위 50%"]:
+        filtered_df = df[df['AI_활용_그룹'] == group_option]
+    else:
+        filtered_df = df[df['디지털_숙련도_그룹'] == group_option]
+    
     digital_input = st.slider(
         "디지털 숙련도 조절",
         min_value=1.0,
