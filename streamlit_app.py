@@ -13,12 +13,17 @@ import os
 # 나눔고딕 폰트 설치 및 설정
 @st.cache_data
 def install_font():
-    os.system('apt-get -qq install -y fonts-nanum')
-    fe = fm.FontEntry(
-        fname='/usr/share/fonts/truetype/nanum/NanumGothic.ttf',
-        name='NanumGothic')
-    fm.font_manager.ttflist.insert(0, fe)
-    plt.rcParams['font.family'] = fe.name
+    # 폰트 설치 생략 (권한 문제로 인해)
+    # os.system('apt-get -qq install -y fonts-nanum')
+    try:
+        fe = fm.FontEntry(
+            fname='/usr/share/fonts/truetype/nanum/NanumGothic.ttf',
+            name='NanumGothic')
+        fm.fontManager.ttflist.insert(0, fe)
+        plt.rcParams['font.family'] = fe.name
+    except:
+        # 폰트 설정 실패 시 기본 폰트 사용
+        plt.rcParams['font.family'] = 'sans-serif'
 
 install_font()
 
