@@ -75,14 +75,60 @@ st.markdown(
     <style>
     html, body, [class*="css"] {
         font-family: 'Nanum Gothic', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #ffffff;
+    }
+    .stApp {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .stTabs [data-baseweb="tab-list"] {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 5px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        color: #ffffff;
+        font-weight: bold;
+    }
+    .stTabs [data-baseweb="tab"][aria-selected="true"] {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+    }
+    .stSelectbox, .stSlider {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        color: #ffffff;
+    }
+    .stHeader, .stSubheader {
+        color: #ffffff;
+    }
+    .stDataFrame, .stTable {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        color: #ffffff;
+    }
+    .stMarkdown {
+        color: #ffffff;
+    }
+    .stPlotlyChart, .stPyplot {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 10px;
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-st.title("2026 3D패션 학생 역량 분석 웹페이지")
-st.write("어떤 역량이 학생들의 생성형 AI 활용 능력에 영향을 주는가?")
+st.markdown(
+    """
+    <div style="text-align: center; padding: 20px; background: rgba(255, 255, 255, 0.1); border-radius: 15px; margin-bottom: 20px;">
+        <h1 style="color: #ffffff; font-size: 2.5em; margin: 0;">2026 3D패션 학생 역량 분석 웹페이지</h1>
+        <p style="color: #ffffff; font-size: 1.2em; margin: 10px 0 0 0;">어떤 역량이 학생들의 생성형 AI 활용 능력에 영향을 주는가?</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 # 그룹 필터
 group_option = st.selectbox(
