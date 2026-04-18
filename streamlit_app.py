@@ -13,17 +13,8 @@ import os
 # 나눔고딕 폰트 설치 및 설정
 @st.cache_data
 def install_font():
-    # 폰트 설치 생략 (권한 문제로 인해)
-    # os.system('apt-get -qq install -y fonts-nanum')
-    try:
-        fe = fm.FontEntry(
-            fname='/usr/share/fonts/truetype/nanum/NanumGothic.ttf',
-            name='NanumGothic')
-        fm.fontManager.ttflist.insert(0, fe)
-        plt.rcParams['font.family'] = fe.name
-    except:
-        # 폰트 설정 실패 시 기본 폰트 사용
-        plt.rcParams['font.family'] = 'sans-serif'
+    # 폰트 설정 생략 (한글 깨짐 문제로 영어 텍스트 사용)
+    pass
 
 install_font()
 
@@ -174,7 +165,7 @@ with tab2:
 
     fig, ax = plt.subplots()
     sns.scatterplot(data=filtered_df, x='창의성', y='AI_활용', ax=ax)
-    ax.set_title('창의성 vs AI 활용 능력')
+    ax.set_title('Creativity vs AI Utilization')
     st.pyplot(fig)
 
 with tab3:
@@ -195,7 +186,7 @@ with tab3:
 
     fig2, ax2 = plt.subplots()
     sns.boxplot(data=filtered_df, x='고숙련_AI', y='디지털_윤리', ax=ax2)
-    ax2.set_title('고숙련 AI 사용자 vs 디지털 윤리')
+    ax2.set_title('High-skilled AI User vs Digital Ethics')
     st.pyplot(fig2)
 
 with tab4:
@@ -230,9 +221,9 @@ with tab4:
         + model.params['디지털_숙련도'] * x_values
     )
     ax3.plot(x_values, y_values, marker='o', markersize=3)
-    ax3.axvline(digital_input, color='red', linestyle='--', label='현재 디지털 숙련도')
-    ax3.set_xlabel('디지털 숙련도')
-    ax3.set_ylabel('예측 AI 활용 점수')
-    ax3.set_title('디지털 숙련도 변화에 따른 예측 AI 활용 점수')
+    ax3.axvline(digital_input, color='red', linestyle='--', label='Current Digital Proficiency')
+    ax3.set_xlabel('Digital Proficiency')
+    ax3.set_ylabel('Predicted AI Utilization Score')
+    ax3.set_title('Predicted AI Utilization Score by Digital Proficiency')
     ax3.legend()
     st.pyplot(fig3)
