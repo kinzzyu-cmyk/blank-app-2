@@ -67,6 +67,13 @@ st.markdown(
 st.title("2026 3D패션 학생 역량 분석 웹페이지")
 st.write("어떤 역량이 학생들의 생성형 AI 활용 능력에 영향을 주는가?")
 
+st.sidebar.header("데이터 요약")
+with st.sidebar.expander("기초 통계", expanded=True):
+    st.write(df[['창의성', '문제해결력', '디지털_숙련도', 'AI_활용']].describe().T)
+with st.sidebar.expander("결측치", expanded=True):
+    missing = df.isna().sum()
+    st.write(missing[missing > 0])
+
 st.sidebar.header("사이드바 필터")
 group_option = st.sidebar.selectbox(
     "그룹 필터",
