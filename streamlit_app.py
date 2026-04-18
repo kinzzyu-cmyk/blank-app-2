@@ -6,9 +6,21 @@ from sklearn.linear_model import LogisticRegression
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# matplotlib 한글 폰트 설정
-plt.rcParams['font.family'] = 'NanumGothic'
-plt.rcParams['axes.unicode_minus'] = False
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+import os
+
+# 나눔고딕 폰트 설치 및 설정
+@st.cache_data
+def install_font():
+    os.system('apt-get -qq install -y fonts-nanum')
+    fe = fm.FontEntry(
+        fname='/usr/share/fonts/truetype/nanum/NanumGothic.ttf',
+        name='NanumGothic')
+    fm.font_manager.ttflist.insert(0, fe)
+    plt.rcParams['font.family'] = fe.name
+
+install_font()
 
 # 데이터 로드
 df = pd.read_csv('data.csv', encoding='utf-8')
