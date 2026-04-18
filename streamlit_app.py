@@ -196,38 +196,53 @@ with tab3:
 with tab4:
     st.header("실시간 예측 (What-if)")
     st.write("슬라이더로 디지털 숙련도를 조절하며 AI 활용 점수를 예측합니다.")
-    digital_input = st.slider(
-        "디지털 숙련도 조절",
-        min_value=1.0,
-        max_value=5.0,
-        value=float(filtered_df['디지털_숙련도'].mean()),
-        step=0.1
-    )
-    mean_creativity = filtered_df['창의성'].mean()
-    mean_problem = filtered_df['문제해결력'].mean()
-    model_input = sm.add_constant(filtered_df[['창의성', '문제해결력', '디지털_숙련도']])
-    model_target = filtered_df['AI_활용']
-    model = sm.OLS(model_target, model_input).fit()
-    pred_ai = (
-        model.params['const']
-        + model.params['창의성'] * mean_creativity
-        + model.params['문제해결력'] * mean_problem
-        + model.params['디지털_숙련도'] * digital_input
-    )
-    st.write(f"디지털 숙련도: {digital_input:.1f}일 때 예측 AI 활용 점수: **{pred_ai:.3f}**")
+    try:
+        digital_input = st.slider(
+            "디지털 숙련도 조절",
+            min_value=1.0,
+            max_value=5.0,
+            value=float(filtered_df['디지털_숙련도'].mean()),
+            step=0.1
+        )
+        if len(filtered_df) < 3:
+            st.error("선택된 그룹의 데이터가 부족하여 예측을 수행할 수 없습니다. 전체 데이터를 사용합니다.")
+            # 전체 데이터 사용
+            full_df = df.copy()
+            mean_creativity = full_df['창의성'].mean()
+            mean_problem = full_df['문제해결력'].mean()
+            model_input = sm.add_constant(full_df[['창의성', '문제해결력', '디지털_숙련도']])
+            model_target = full_df['AI_활용']
+            model = sm.OLS(model_target, model_input).fit()
+        else:
+            mean_creativity = filtered_df['창의성'].mean()
+            mean_problem = filtered_df['문제해결력'].mean()
+            model_input = sm.add_constant(filtered_df[['창의성', '문제해결력', '디지털_숙련도']])
+            model_target = filtered_df['AI_활용']
+            model = sm.OLS(model_target, model_input).fit()
+        
+        pred_ai = (
+            model.params['const']
+            + model.params['창의성'] * mean_creativity
+            + model.params['문제해결력'] * mean_problem
+            + model.params['디지털_숙련도'] * digital_input
+        )
+        st.write(f"디지털 숙련도: {digital_input:.1f}일 때 예측 AI 활용 점수: **{pred_ai:.3f}**")
 
-    fig3, ax3 = plt.subplots()
-    x_values = np.arange(1.0, 5.01, 0.1)
-    y_values = (
-        model.params['const']
-        + model.params['창의성'] * mean_creativity
-        + model.params['문제해결력'] * mean_problem
-        + model.params['디지털_숙련도'] * x_values
-    )
-    ax3.plot(x_values, y_values, marker='o', markersize=3)
-    ax3.axvline(digital_input, color='red', linestyle='--', label='Current Digital Proficiency')
-    ax3.set_xlabel('Digital Proficiency')
-    ax3.set_ylabel('Predicted AI Utilization Score')
-    ax3.set_title('Predicted AI Utilization Score by Digital Proficiency')
-    ax3.legend()
-    st.pyplot(fig3)
+        fig3, ax3 = plt.subplots()
+        x_values = np.arange(1.0, 5.01, 0.1)
+        y_values = (
+            model.params['const']
+            + model.params['창의성'] * mean_creativity
+            + model.params['문제해결력'] * mean_problem
+            + model.params['디지털_숙련도'] * x_values
+        )
+        ax3.plot(x_values, y_values, marker='o', markersize=3)
+        ax3.axvline(digital_input, color='red', linestyle='--', label='Current Digital Proficiency')
+        ax3.set_xlabel('Digital Proficiency')
+        ax3.set_ylabel('Predicted AI Utilization Score')
+        ax3.set_title('Predicted AI Utilization Score by Digital Proficiency')
+        ax3.legend()
+        st.pyplot(fig3)
+    except Exception as e:
+        st.error(f"예측 중 오류가 발생했습니다: {str(e)}")
+        st.write("데이터를 확인해 주세요.")
