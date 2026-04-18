@@ -84,14 +84,8 @@ st.markdown(
 st.title("2026 3D패션 학생 역량 분석 웹페이지")
 st.write("어떤 역량이 학생들의 생성형 AI 활용 능력에 영향을 주는가?")
 
-page = st.sidebar.radio(
-    "메뉴 선택",
-    ["데이터 요약", "주제 1", "주제 2", "What if"],
-    index=0,
-)
-
-st.sidebar.header("그룹 필터")
-group_option = st.sidebar.selectbox(
+# 그룹 필터
+group_option = st.selectbox(
     "그룹 필터",
     ["전체", "AI 활용 상위 50%", "AI 활용 하위 50%", "디지털 숙련도 높음", "디지털 숙련도 낮음"]
 )
@@ -103,7 +97,10 @@ elif group_option in ["AI 활용 상위 50%", "AI 활용 하위 50%"]:
 else:
     filtered_df = df[df['디지털_숙련도_그룹'] == group_option]
 
-if page == "데이터 요약":
+# 탭 메뉴
+tab1, tab2, tab3, tab4 = st.tabs(["데이터 요약", "주제 1", "주제 2", "What if"])
+
+with tab1:
     st.header("데이터 요약")
     st.write(f"선택된 그룹: **{group_option}** (응답자 {len(filtered_df)}명)")
     st.subheader("기초 통계")
@@ -115,7 +112,7 @@ if page == "데이터 요약":
     else:
         st.write("결측치가 없습니다.")
 
-elif page == "주제 1":
+with tab2:
     st.header("주제 1: 다중선형 회귀분석")
     st.write("3D 패션 전공 학생들의 창의성 및 디지털 숙련도가 생성형 AI 창의적 활용 능력에 미치는 영향 분석")
     st.write("종속변수: 생성형 AI 활용 능력 (15-1~15-3 평균 점수)")
@@ -134,7 +131,7 @@ elif page == "주제 1":
     ax.set_title('창의성 vs AI 활용 능력')
     st.pyplot(fig)
 
-elif page == "주제 2":
+with tab3:
     st.header("주제 2: 로지스틱 회귀분석")
     st.write("디지털 윤리 의식과 자기주도적 학습 태도가 '고숙련 AI 사용자' 여부를 결정짓는가?")
     st.write("종속변수: 고숙련 AI 사용자 여부 (AI 활용 점수 중앙값 이상인 경우 1, 미만인 경우 0)")
@@ -155,10 +152,10 @@ elif page == "주제 2":
     ax2.set_title('고숙련 AI 사용자 vs 디지털 윤리')
     st.pyplot(fig2)
 
-elif page == "What if":
+with tab4:
     st.header("실시간 예측 (What-if)")
     st.write("슬라이더로 디지털 숙련도를 조절하며 AI 활용 점수를 예측합니다.")
-    digital_input = st.sidebar.slider(
+    digital_input = st.slider(
         "디지털 숙련도 조절",
         min_value=1.0,
         max_value=5.0,
