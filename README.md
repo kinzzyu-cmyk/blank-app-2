@@ -18,16 +18,44 @@
 
 ## 실행 방법
 
-1. 요구사항 설치
+1. 현재 Python 환경에서 필요한 패키지를 설치합니다.
 
-   ```
-   $ pip install -r requirements.txt
+   ```bash
+   python3 -m pip install -r requirements.txt
    ```
 
-2. 앱 실행
+2. 앱을 실행합니다.
 
+   ```bash
+   streamlit run streamlit_app.py
    ```
-   $ streamlit run streamlit_app.py
+
+## GitHub에 반영하는 방법
+
+1. 변경된 파일 상태 확인:
+
+   ```bash
+   git status
    ```
+
+2. `requirements.txt` 수정 사항을 스테이징:
+
+   ```bash
+   git add requirements.txt
+   ```
+
+3. 커밋 생성:
+
+   ```bash
+   git commit -m "Pin dependencies and ensure matplotlib is installed"
+   ```
+
+4. 원격 저장소로 푸시:
+
+   ```bash
+   git push origin main
+   ```
+
+> 배포 환경에서는 GitHub에 푸시된 후 자동으로 `requirements.txt`를 다시 설치하므로 `matplotlib` 의존성이 반영됩니다.
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://blank-app-template.streamlit.app/)
