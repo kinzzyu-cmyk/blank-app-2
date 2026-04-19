@@ -115,8 +115,12 @@ st.markdown(
     """
     <div style="text-align: center; padding: 20px; background: rgba(255, 255, 255, 0.1); border-radius: 15px; margin-bottom: 20px;">
         <h1 style="color: #ffffff; font-size: 2.5em; margin: 0;">2026 3D패션 학생 역량 분석 웹페이지</h1>
-        <p style="color: #ffffff; font-size: 1.2em; margin: 10px 0 0 0;">어떤 역량이 학생들의 생성형 AI 활용 능력에 영향을 주는가?</p>
-    </div>
+        <p style="color: #ffffff; font-size: 1.2em; margin: 10px 0 0 0;">어떤 역량이 학생들의 생성형 AI 활용 능력에 영향을 주는가?</p>        <p style="color: #ffffff; font-size: 1em; margin: 15px 0 0 0; line-height: 1.6;">
+            본 분석은 서울디자인고등학교 의상디자인 전공 학생들의 실제 역량 데이터를 기반으로 합니다. 학생들의 응답은 교육 현장에서 수집된 실제 역량 지표를 반영합니다.
+        </p>
+        <p style="color: #ffffff; font-size: 1em; margin: 10px 0 0 0; line-height: 1.6;">
+            STEAM 융합 교육 관점에서 창의성과 디지털 숙련도는 AI 활용의 핵심 독립변수입니다. 의상디자인 학습에서 창의성은 새로운 디자인 아이디어를 생성하고 문제를 해결하는 능력을 의미하며, 디지털 숙련도는 디자인 소프트웨어와 AI 도구를 효과적으로 활용하여 아이디어를 구현하는 실무 역량을 반영합니다.
+        </p>    </div>
     """,
     unsafe_allow_html=True,
 )
