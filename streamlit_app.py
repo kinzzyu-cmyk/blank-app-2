@@ -150,7 +150,17 @@ with tab2:
     model = sm.OLS(y, X).fit()
 
     st.write("회귀 분석 결과:")
-    st.write(model.summary())
+    result_table = pd.DataFrame({
+        '계수': model.params,
+        '표준오차': model.bse,
+        't값': model.tvalues,
+        'p값': model.pvalues,
+        '신뢰구간 하한(2.5%)': model.conf_int()[0],
+        '신뢰구간 상한(97.5%)': model.conf_int()[1]
+    })
+    result_table.index = ['절편'] + ['창의성', '문제해결력', '디지털_숙련도']
+    st.dataframe(result_table.round(4))
+    st.write(f"모델 결정계수 (R-squared): **{model.rsquared:.4f}**, 수정 결정계수 (Adj. R-squared): **{model.rsquared_adj:.4f}**")
 
     fig, ax = plt.subplots()
     sns.scatterplot(data=filtered_df, x='창의성', y='AI_활용', ax=ax)
