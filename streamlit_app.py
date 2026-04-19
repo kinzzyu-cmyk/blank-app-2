@@ -103,6 +103,9 @@ st.markdown(
         background: rgba(148, 163, 184, 0.30);
         margin: 24px 0;
     }
+    .stText, .stMarkdown, .stHeader, .stSubheader, .stDataFrame, .stTable, .stSelectbox, .stSlider {
+        color: #0f172a !important;
+    }
     .stTable table {
         color: #0f172a;
     }
@@ -115,9 +118,9 @@ with st.container():
     st.markdown(
         """
         <div class="hero-card">
-            <h1 style="color:#ffffff; margin-bottom: 10px;">👗 2026 AI-STEAM 융합 패션디자인 역량 분석</h1>
-            <p style="color:#cbd5e1; font-size:1.1rem; margin-top:0;">생성형 AI 시대, 의상디자인 전공 학생들에게 가장 필요한 역량은 무엇인가?</p>
-            <div style="margin-top:18px; color:#e2e8f0; line-height:1.8;">
+            <h1 style="color:#0f172a; margin-bottom: 10px;">👗 2026 AI-STEAM 융합 패션디자인 역량 분석</h1>
+            <p style="color:#1f2937; font-size:1.1rem; margin-top:0;">생성형 AI 시대, 의상디자인 전공 학생들에게 가장 필요한 역량은 무엇인가?</p>
+            <div style="margin-top:18px; color:#1f2937; line-height:1.8;">
                 <p><strong>분석 대상:</strong> 서울디자인고등학교 스마트패션디자인과 학생 (N=32)</p>
                 <p><strong>분석 도구:</strong> Google Colab (Python), Streamlit, Scikit-learn, Statsmodels</p>
                 <p><strong>연구 배경:</strong> 3D CLO 및 생성형 AI 도입에 따른 메이커 교육(STEAM) 환경에서 학생들의 핵심 성공 요인을 데이터 기반으로 규명함.</p>
