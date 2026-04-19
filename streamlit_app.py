@@ -2,128 +2,177 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
-from sklearn.linear_model import LogisticRegression
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
-import os
-
-# 나눔고딕 폰트 설치 및 설정
-@st.cache_data
-def install_font():
-    # 폰트 설정 생략 (한글 깨짐 문제로 영어 텍스트 사용)
-    pass
-
-install_font()
+st.set_page_config(
+    page_title="2026 AI-STEAM 융합 패션디자인 역량 분석",
+    page_icon="👗",
+    layout="wide",
+)
 
 # 데이터 로드
 df = pd.read_csv('data.csv', encoding='utf-8')
 
 # 종속변수 계산 (주제 1)
-df['AI_활용'] = (df['15-1. 나는 생성형 AI를 이용해서 새로운 생각이나 아이디어를 만들어낼 수 있다.'] + 
-                 df['15-2. 나는   생성형 AI 의 도움으로 독창적인 글이나 이야기를 쓸 수 있다.'] + 
-                 df['15-3. 나는 생성형 AI를 사용해 복잡한 문제를 해결하는 새로운 방법을 찾아낼 수 있다.']) / 3
+df['AI_활용'] = (
+    df['15-1. 나는 생성형 AI를 이용해서 새로운 생각이나 아이디어를 만들어낼 수 있다.']
+    + df['15-2. 나는   생성형 AI 의 도움으로 독창적인 글이나 이야기를 쓸 수 있다.']
+    + df['15-3. 나는 생성형 AI를 사용해 복잡한 문제를 해결하는 새로운 방법을 찾아낼 수 있다.']
+) / 3
 
 # 독립변수 계산 (주제 1)
-df['창의성'] = (df['1-1. 나는 새로운 아이디어를 떠올리는 것을 즐긴다.'] + 
-                df['1-2. 문제 해결시 기존의 방식 외에도 창의적인 방법을 탐색한다.'] + 
-                df['1-3. 나는 기존의 틀에서 벗어나 자유롭게 상상하는 편이다.'] + 
-                df['1-4. 다양한 정보를 융합하여 새로운 아이디어를 만들어 낼 수 있다.']) / 4
+df['창의성'] = (
+    df['1-1. 나는 새로운 아이디어를 떠올리는 것을 즐긴다.']
+    + df['1-2. 문제 해결시 기존의 방식 외에도 창의적인 방법을 탐색한다.']
+    + df['1-3. 나는 기존의 틀에서 벗어나 자유롭게 상상하는 편이다.']
+    + df['1-4. 다양한 정보를 융합하여 새로운 아이디어를 만들어 낼 수 있다.']
+) / 4
 
-df['문제해결력'] = (df['3-1. 문제를 해결하기 위해 여러 가지 아이디어를 떠올려 본다.'] + 
-                    df['3-2. 스스로 문제를 정의하고, 해결 방향을 설정할 수 있다.'] + 
-                    df['3-3. 다양한 해결 방법을 비교한 후 최적의 방안을 선택하려 한다.'] + 
-                    df['3-4. 문제 상황에서 포기하지 않고 끝까지 해결하려고 노력한다.']) / 4
+# 문제해결력
+df['문제해결력'] = (
+    df['3-1. 문제를 해결하기 위해 여러 가지 아이디어를 떠올려 본다.']
+    + df['3-2. 스스로 문제를 정의하고, 해결 방향을 설정할 수 있다.']
+    + df['3-3. 다양한 해결 방법을 비교한 후 최적의 방안을 선택하려 한다.']
+    + df['3-4. 문제 상황에서 포기하지 않고 끝까지 해결하려고 노력한다.']
+) / 4
 
-df['디지털_숙련도'] = (df['4-1. 나는 디자인 소프트웨어(포토샵, 3D CLO 등)를 능숙하게 다룰 수 있다.'] + 
-                       df['4-2. 디지털 콘텐츠 제작 역량'] + 
-                       df['4-3. 다양한 디지털 플랫폼을 효과적으로 공유하거나 발표할 수 있다.'] + 
-                       df['4-4. 디지털 기술을 디자인 아이디어 실현을 위해 창의적으로 응용할 수 있다.']) / 4
+# 디지털 숙련도
+df['디지털_숙련도'] = (
+    df['4-1. 나는 디자인 소프트웨어(포토샵, 3D CLO 등)를 능숙하게 다룰 수 있다.']
+    + df['4-2. 디지털 콘텐츠 제작 역량']
+    + df['4-3. 다양한 디지털 플랫폼을 효과적으로 공유하거나 발표할 수 있다.']
+    + df['4-4. 디지털 기술을 디자인 아이디어 실현을 위해 창의적으로 응용할 수 있다.']
+) / 4
 
 # 독립변수 계산 (주제 2)
-df['디지털_윤리'] = (df['6-1. SNS나 커뮤니티에 정보를 공유할 때 타인에게 미칠 영향을 생각한다.'] + 
-                     df['6-2. 디지털 환경에서의 개인정보 보호와 보안의 중요성을 인식하고 실천한다.'] + 
-                     df['6-3. 온라인에서 상대방과 의사소통할 때 예의와 책임감을 가지고 표현한다.'] + 
-                     df['6-4. 사이버폭력, 허위정보 등의 문제에 대한 경각심을 가지고 있다.']) / 4
+df['디지털_윤리'] = (
+    df['6-1. SNS나 커뮤니티에 정보를 공유할 때 타인에게 미칠 영향을 생각한다.']
+    + df['6-2. 디지털 환경에서의 개인정보 보호와 보안의 중요성을 인식하고 실천한다.']
+    + df['6-3. 온라인에서 상대방과 의사소통할 때 예의와 책임감을 가지고 표현한다.']
+    + df['6-4. 사이버폭력, 허위정보 등의 문제에 대한 경각심을 가지고 있다.']
+) / 4
 
-df['자기관리'] = (df['10-1. 내가 관심있는 분야에 대해 알리 위해 노력한다.'] + 
-                  df['10-2.나는 내가 해야겠다고 생각하는 일은 스스로 해결할 수 있다.'] + 
-                  df['10-3. 내가 겪는 경험들이 나에게 어떤 의미가 있는지 생각해본다.'] + 
-                  df['10-4. 어려운 일을 완수하지 못했을 때, 다음 번에 그 일을 할 때는 더 열심히 노력하겠다고 마음먹는다.']) / 4
+df['자기관리'] = (
+    df['10-1. 내가 관심있는 분야에 대해 알리 위해 노력한다.']
+    + df['10-2.나는 내가 해야겠다고 생각하는 일은 스스로 해결할 수 있다.']
+    + df['10-3. 내가 겪는 경험들이 나에게 어떤 의미가 있는지 생각해본다.']
+    + df['10-4. 어려운 일을 완수하지 못했을 때, 다음 번에 그 일을 할 때는 더 열심히 노력하겠다고 마음먹는다.']
+) / 4
 
 # 고숙련 AI 사용자 (주제 2 종속변수)
 median_ai = df['AI_활용'].median()
 df['고숙련_AI'] = (df['AI_활용'] >= median_ai).astype(int)
 
-df['AI_활용_그룹'] = np.where(df['AI_활용'] >= df['AI_활용'].median(), 'AI 활용 상위 50%', 'AI 활용 하위 50%')
-df['디지털_숙련도_그룹'] = np.where(df['디지털_숙련도'] >= df['디지털_숙련도'].median(), '디지털 숙련도 높음', '디지털 숙련도 낮음')
+df['AI_활용_그룹'] = np.where(
+    df['AI_활용'] >= df['AI_활용'].median(), 'AI 활용 상위 50%', 'AI 활용 하위 50%'
+)
+df['디지털_숙련도_그룹'] = np.where(
+    df['디지털_숙련도'] >= df['디지털_숙련도'].median(), '디지털 숙련도 높음', '디지털 숙련도 낮음'
+)
 
-# Streamlit 앱
 st.markdown(
     """
     <style>
     html, body, [class*="css"] {
         font-family: 'Nanum Gothic', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: #ffffff;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #334155 100%);
+        color: #f8fafc;
     }
     .stApp {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #334155 100%);
     }
-    .stTabs [data-baseweb="tab-list"] {
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 5px;
+    .hero-card {
+        background: rgba(15, 23, 42, 0.92);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 24px;
+        padding: 28px;
+        margin-bottom: 24px;
     }
-    .stTabs [data-baseweb="tab"] {
-        color: #ffffff;
-        font-weight: bold;
+    .section-card {
+        background: rgba(30, 41, 59, 0.86);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 18px;
+        padding: 22px;
+        margin-bottom: 24px;
     }
-    .stTabs [data-baseweb="tab"][aria-selected="true"] {
-        background-color: rgba(255, 255, 255, 0.2);
-        border-radius: 8px;
+    .divider {
+        height: 1px;
+        background: rgba(148, 163, 184, 0.18);
+        margin: 24px 0;
     }
-    .stSelectbox, .stSlider {
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        color: #ffffff;
-    }
-    .stHeader, .stSubheader {
-        color: #ffffff;
-    }
-    .stDataFrame, .stTable {
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        color: #ffffff;
-    }
-    .stMarkdown {
-        color: #ffffff;
-    }
-    .stPlotlyChart, .stPyplot {
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 10px;
+    .stTable table {
+        color: #f8fafc;
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-st.markdown(
-    """
-    <div style="text-align: center; padding: 20px; background: rgba(255, 255, 255, 0.1); border-radius: 15px; margin-bottom: 20px;">
-        <h1 style="color: #ffffff; font-size: 2.5em; margin: 0;">2026 3D패션 학생 역량 분석 웹페이지</h1>
-        <p style="color: #ffffff; font-size: 1.2em; margin: 10px 0 0 0;">어떤 역량이 학생들의 생성형 AI 활용 능력에 영향을 주는가?</p>        <p style="color: #ffffff; font-size: 1em; margin: 15px 0 0 0; line-height: 1.6;">
-            본 분석은 서울디자인고등학교 의상디자인 전공 학생들의 실제 역량 데이터를 기반으로 합니다. 학생들의 응답은 교육 현장에서 수집된 실제 역량 지표를 반영합니다.
-        </p>
-        <p style="color: #ffffff; font-size: 1em; margin: 10px 0 0 0; line-height: 1.6;">
-            STEAM 융합 교육 관점에서 창의성과 디지털 숙련도는 AI 활용의 핵심 독립변수입니다. 의상디자인 학습에서 창의성은 새로운 디자인 아이디어를 생성하고 문제를 해결하는 능력을 의미하며, 디지털 숙련도는 디자인 소프트웨어와 AI 도구를 효과적으로 활용하여 아이디어를 구현하는 실무 역량을 반영합니다.
-        </p>    </div>
+with st.container():
+    st.markdown(
+        """
+        <div class="hero-card">
+            <h1 style="color:#ffffff; margin-bottom: 10px;">👗 2026 AI-STEAM 융합 패션디자인 역량 분석</h1>
+            <p style="color:#cbd5e1; font-size:1.1rem; margin-top:0;">생성형 AI 시대, 의상디자인 전공 학생들에게 가장 필요한 역량은 무엇인가?</p>
+            <div style="margin-top:18px; color:#e2e8f0; line-height:1.8;">
+                <p><strong>분석 대상:</strong> 서울디자인고등학교 스마트패션디자인과 학생 (N=32)</p>
+                <p><strong>분석 도구:</strong> Google Colab (Python), Streamlit, Scikit-learn, Statsmodels</p>
+                <p><strong>연구 배경:</strong> 3D CLO 및 생성형 AI 도입에 따른 메이커 교육(STEAM) 환경에서 학생들의 핵심 성공 요인을 데이터 기반으로 규명함.</p>
+            </div>
+        </div>
     """,
-    unsafe_allow_html=True,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
+
+    st.markdown(
+        """
+        <div class="section-card">
+            <h2 style="color:#ffffff; margin-bottom: 8px;">핵심 분석 설계: 변수 설정</h2>
+            <p style="color:#cbd5e1; margin-bottom: 14px;">다중선형 회귀와 로지스틱 회귀를 함께 다뤄 두 모델의 목적과 변수 구성을 한눈에 비교합니다.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+comparison_df = pd.DataFrame(
+    [
+        [
+            '다중선형 회귀',
+            '연속형 예측',
+            'AI_활용',
+            '창의성, 문제해결력, 디지털_숙련도',
+            'R-squared, 회귀계수',
+            '생성형 AI 활용 능력 점수 예측'
+        ],
+        [
+            '로지스틱 회귀',
+            '이진 분류',
+            '고숙련_AI',
+            '디지털_윤리, 자기관리',
+            '정확도, 승산비(odds ratio)',
+            '고숙련 AI 사용자 여부 분류'
+        ],
+    ],
+    columns=[
+        '모델',
+        '분석 유형',
+        '종속변수',
+        '독립변수',
+        '평가지표',
+        '분석 목표'
+    ],
 )
+
+st.dataframe(comparison_df.style.set_properties(**{
+    'background-color': 'rgba(15, 23, 42, 0.75)',
+    'color': '#f8fafc',
+    'border': '1px solid rgba(148, 163, 184, 0.12)'
+}))
+
+# 탭 메뉴
 
 # 탭 메뉴
 tab1, tab2, tab3, tab4 = st.tabs(["데이터 요약", "주제 1", "주제 2", "What if"])
