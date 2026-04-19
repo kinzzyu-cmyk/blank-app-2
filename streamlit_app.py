@@ -103,6 +103,25 @@ st.markdown(
         background: rgba(148, 163, 184, 0.30);
         margin: 24px 0;
     }
+    .stButton > button {
+        width: 100%;
+        background-color: #1e40af;
+        color: #ffffff;
+        border: 1px solid rgba(59, 130, 246, 0.9);
+        border-radius: 14px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 10px;
+        font-weight: 700;
+        text-align: left;
+        box-shadow: 0 6px 18px rgba(59, 130, 246, 0.18);
+    }
+    .stButton > button:hover {
+        background-color: #2563eb;
+        border-color: rgba(37, 99, 235, 0.95);
+    }
+    .stButton > button:focus {
+        outline: 3px solid rgba(59, 130, 246, 0.35);
+    }
     .stText, .stMarkdown, .stHeader, .stSubheader, .stDataFrame, .stTable, .stSelectbox, .stSlider {
         color: #0f172a !important;
     }
@@ -136,22 +155,23 @@ with st.container():
 if 'page' not in st.session_state:
     st.session_state.page = None
 
-PAGE_LABELS = [
-    '데이터 요약',
-    '주제 1 (다중선형)',
-    '주제 2 (로지스틱)',
-    'What if',
+PAGE_BUTTONS = [
+    ('📊 데이터 요약', '데이터 요약'),
+    ('📈 주제 1 (다중선형)', '주제 1 (다중선형)'),
+    ('📉 주제 2 (로지스틱)', '주제 2 (로지스틱)'),
+    ('🧠 What if', 'What if'),
 ]
 
 def set_page(page_name):
     st.session_state.page = page_name
 
 with st.sidebar:
-    for label in PAGE_LABELS:
-        st.button(label, on_click=set_page, args=(label,))
+    st.markdown('## 탐색 메뉴')
+    for label, page_name in PAGE_BUTTONS:
+        st.button(label, on_click=set_page, args=(page_name,))
 
     st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-    if st.button('메인화면으로'):
+    if st.button('🏠 메인화면으로'):
         st.session_state.page = None
 
 page = st.session_state.page
