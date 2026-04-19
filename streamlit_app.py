@@ -132,187 +132,197 @@ with st.container():
 
     st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 
-    st.markdown(
-        """
-        <div class="section-card">
-            <h2 style="color:#ffffff; margin-bottom: 8px;">핵심 분석 설계: 변수 설정</h2>
-            <p style="color:#cbd5e1; margin-bottom: 14px;">다중선형 회귀와 로지스틱 회귀를 함께 다뤄 두 모델의 목적과 변수 구성을 한눈에 비교합니다.</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+# 사이드바 네비게이션
+if 'page' not in st.session_state:
+    st.session_state.page = None
 
-comparison_df = pd.DataFrame(
-    [
-        [
-            '다중선형 회귀',
-            '연속형 예측',
-            'AI_활용',
-            '창의성, 문제해결력, 디지털_숙련도',
-            'R-squared, 회귀계수',
-            '생성형 AI 활용 능력 점수 예측'
-        ],
-        [
-            '로지스틱 회귀',
-            '이진 분류',
-            '고숙련_AI',
-            '디지털_윤리, 자기관리',
-            '정확도, 승산비(odds ratio)',
-            '고숙련 AI 사용자 여부 분류'
-        ],
-    ],
-    columns=[
-        '모델',
-        '분석 유형',
-        '종속변수',
-        '독립변수',
-        '평가지표',
-        '분석 목표'
-    ],
-)
+PAGE_LABELS = [
+    '데이터 요약',
+    '주제 1 (다중선형)',
+    '주제 2 (로지스틱)',
+    'What if',
+]
 
-st.dataframe(comparison_df.style.set_properties(**{
-    'background-color': 'rgba(15, 23, 42, 0.75)',
-    'color': '#f8fafc',
-    'border': '1px solid rgba(148, 163, 184, 0.12)'
-}))
+def set_page(page_name):
+    st.session_state.page = page_name
 
-# 탭 메뉴
+with st.sidebar:
+    for label in PAGE_LABELS:
+        st.button(label, on_click=set_page, args=(label,))
 
-# 탭 메뉴
-tab1, tab2, tab3, tab4 = st.tabs(["데이터 요약", "주제 1", "주제 2", "What if"])
+page = st.session_state.page
 
-with tab1:
-    filtered_df = df.copy()
-    st.header("데이터 요약")
-    st.write(f"선택된 그룹: **전체** (응답자 {len(filtered_df)}명)")
-    st.subheader("기초 통계")
-    st.write(filtered_df[['창의성', '문제해결력', '디지털_숙련도', 'AI_활용']].describe().T)
-    st.subheader("결측치")
-    missing = filtered_df.isna().sum()
-    if missing.any():
-        st.write(missing[missing > 0])
-    else:
-        st.write("결측치가 없습니다.")
-
-with tab2:
-    filtered_df = df.copy()
-    st.header("주제 1: 다중선형 회귀분석")
-    st.write("3D 패션 전공 학생들의 창의성 및 디지털 숙련도가 생성형 AI 창의적 활용 능력에 미치는 영향 분석")
-    st.write("종속변수: 생성형 AI 활용 능력 (15-1~15-3 평균 점수)")
-    st.write("독립변수: 창의성(1번 항목들), 문제해결력(3번 항목들), 디지털 숙련도(4번 항목들)")
-
-    X = filtered_df[['창의성', '문제해결력', '디지털_숙련도']]
-    X = sm.add_constant(X)
-    y = filtered_df['AI_활용']
-    model = sm.OLS(y, X).fit()
-
-    st.write("회귀 분석 결과:")
-    result_table = pd.DataFrame({
-        '계수': model.params,
-        '표준오차': model.bse,
-        't값': model.tvalues,
-        'p값': model.pvalues,
-        '신뢰구간 하한(2.5%)': model.conf_int()[0],
-        '신뢰구간 상한(97.5%)': model.conf_int()[1]
-    })
-    result_table.index = ['절편'] + ['창의성', '문제해결력', '디지털_숙련도']
-    st.dataframe(result_table.round(4))
-    st.write(f"모델 결정계수 (R-squared): **{model.rsquared:.4f}**, 수정 결정계수 (Adj. R-squared): **{model.rsquared_adj:.4f}**")
-
-    fig, ax = plt.subplots()
-    sns.scatterplot(data=filtered_df, x='창의성', y='AI_활용', ax=ax)
-    ax.set_title('Creativity vs AI Utilization')
-    ax.set_xlabel('Creativity')
-    ax.set_ylabel('AI Utilization')
-    st.pyplot(fig)
-
-with tab3:
-    filtered_df = df.copy()
-    st.header("주제 2: 로지스틱 회귀분석")
-    st.write("디지털 윤리 의식과 자기주도적 학습 태도가 '고숙련 AI 사용자' 여부를 결정짓는가?")
-    st.write("종속변수: 고숙련 AI 사용자 여부 (AI 활용 점수 중앙값 이상인 경우 1, 미만인 경우 0)")
-    st.write("독립변수: 디지털 윤리(6번 항목), 자기관리 역량(10번 항목)")
-
-    X_log = filtered_df[['디지털_윤리', '자기관리']]
-    X_log = sm.add_constant(X_log)
-    y_log = filtered_df['고숙련_AI']
-    log_model = sm.Logit(y_log, X_log).fit(disp=False)
-
-    result_log = pd.DataFrame({
-        '계수': log_model.params,
-        '표준오차': log_model.bse,
-        'z값': log_model.tvalues,
-        'p값': log_model.pvalues,
-        '신뢰구간 하한(2.5%)': log_model.conf_int()[0],
-        '신뢰구간 상한(97.5%)': log_model.conf_int()[1],
-        '승산비(odds ratio)': np.exp(log_model.params)
-    })
-    result_log.index = ['절편'] + ['디지털_윤리', '자기관리']
-
-    st.write("로지스틱 회귀 결과:")
-    st.dataframe(result_log.round(4))
-    st.write(f"모델 정확도: **{(log_model.predict(X_log).round() == y_log).mean():.4f}**")
-
-    fig2, ax2 = plt.subplots()
-    sns.boxplot(data=filtered_df, x='고숙련_AI', y='디지털_윤리', ax=ax2)
-    ax2.set_title('High-skilled AI User vs Digital Ethics')
-    ax2.set_xlabel('High-skilled AI User')
-    ax2.set_ylabel('Digital Ethics')
-    st.pyplot(fig2)
-
-with tab4:
-    st.header("실시간 예측 (What-if)")
-    st.write("슬라이더로 디지털 숙련도를 조절하며 AI 활용 점수를 예측합니다.")
-    
-    # 그룹 필터
-    group_option = st.selectbox(
-        "그룹 필터",
-        ["전체", "AI 활용 상위 50%", "AI 활용 하위 50%", "디지털 숙련도 높음", "디지털 숙련도 낮음"]
-    )
-
-    if group_option == "전체":
+with st.container():
+    if page is None:
+        st.info('왼쪽 사이드바에서 섹션을 선택하여 분석 내용을 확인하세요.')
+    elif page == '데이터 요약':
         filtered_df = df.copy()
-    elif group_option in ["AI 활용 상위 50%", "AI 활용 하위 50%"]:
-        filtered_df = df[df['AI_활용_그룹'] == group_option]
-    else:
-        filtered_df = df[df['디지털_숙련도_그룹'] == group_option]
-    
-    digital_input = st.slider(
-        "디지털 숙련도 조절",
-        min_value=1.0,
-        max_value=5.0,
-        value=float(filtered_df['디지털_숙련도'].mean()),
-        step=0.1
-    )
-    mean_creativity = filtered_df['창의성'].mean()
-    mean_problem = filtered_df['문제해결력'].mean()
-    model_input = sm.add_constant(filtered_df[['창의성', '문제해결력', '디지털_숙련도']])
-    model_target = filtered_df['AI_활용']
-    try:
-        model = sm.OLS(model_target, model_input).fit()
-        pred_ai = (
-            model.params['const']
-            + model.params['창의성'] * mean_creativity
-            + model.params['문제해결력'] * mean_problem
-            + model.params['디지털_숙련도'] * digital_input
-        )
-        st.write(f"디지털 숙련도: {digital_input:.1f}일 때 예측 AI 활용 점수: **{pred_ai:.3f}**")
+        st.header('데이터 요약')
+        st.write(f'선택된 그룹: **전체** (응답자 {len(filtered_df)}명)')
+        st.subheader('기초 통계')
+        st.write(filtered_df[['창의성', '문제해결력', '디지털_숙련도', 'AI_활용']].describe().T)
+        st.subheader('결측치')
+        missing = filtered_df.isna().sum()
+        if missing.any():
+            st.write(missing[missing > 0])
+        else:
+            st.write('결측치가 없습니다.')
 
-        fig3, ax3 = plt.subplots()
-        x_values = np.arange(1.0, 5.01, 0.1)
-        y_values = (
-            model.params['const']
-            + model.params['창의성'] * mean_creativity
-            + model.params['문제해결력'] * mean_problem
-            + model.params['디지털_숙련도'] * x_values
+        st.markdown("---")
+        st.subheader('핵심 분석 설계: 변수 설정')
+        st.write('다중선형 회귀와 로지스틱 회귀 모델의 목적과 변수 구성을 한눈에 비교합니다.')
+
+        comparison_df = pd.DataFrame(
+            [
+                [
+                    '다중선형 회귀',
+                    '연속형 예측',
+                    'AI_활용',
+                    '창의성, 문제해결력, 디지털_숙련도',
+                    'R-squared, 회귀계수',
+                    '생성형 AI 활용 능력 점수 예측'
+                ],
+                [
+                    '로지스틱 회귀',
+                    '이진 분류',
+                    '고숙련_AI',
+                    '디지털_윤리, 자기관리',
+                    '정확도, 승산비(odds ratio)',
+                    '고숙련 AI 사용자 여부 분류'
+                ],
+            ],
+            columns=[
+                '모델',
+                '분석 유형',
+                '종속변수',
+                '독립변수',
+                '평가지표',
+                '분석 목표'
+            ],
         )
-        ax3.plot(x_values, y_values, marker='o', markersize=3)
-        ax3.axvline(digital_input, color='red', linestyle='--', label='Current Digital Proficiency')
-        ax3.set_xlabel('Digital Proficiency')
-        ax3.set_ylabel('Predicted AI Utilization Score')
-        ax3.set_title('Predicted AI Utilization Score by Digital Proficiency')
-        ax3.legend()
-        st.pyplot(fig3)
-    except Exception as e:
-        st.error(f"모델 학습에 실패했습니다: {str(e)}. 데이터가 부족하거나 문제가 있을 수 있습니다.")
+        st.dataframe(comparison_df.style.set_properties(**{
+            'background-color': 'rgba(255, 255, 255, 0.92)',
+            'color': '#0f172a',
+            'border': '1px solid rgba(148, 163, 184, 0.20)'
+        }))
+
+    elif page == '주제 1 (다중선형)':
+        filtered_df = df.copy()
+        st.header('주제 1: 다중선형 회귀분석')
+        st.write('3D 패션 전공 학생들의 창의성 및 디지털 숙련도가 생성형 AI 창의적 활용 능력에 미치는 영향 분석')
+        st.write('종속변수: 생성형 AI 활용 능력 (15-1~15-3 평균 점수)')
+        st.write('독립변수: 창의성(1번 항목들), 문제해결력(3번 항목들), 디지털 숙련도(4번 항목들)')
+
+        X = filtered_df[['창의성', '문제해결력', '디지털_숙련도']]
+        X = sm.add_constant(X)
+        y = filtered_df['AI_활용']
+        model = sm.OLS(y, X).fit()
+
+        st.write('회귀 분석 결과:')
+        result_table = pd.DataFrame({
+            '계수': model.params,
+            '표준오차': model.bse,
+            't값': model.tvalues,
+            'p값': model.pvalues,
+            '신뢰구간 하한(2.5%)': model.conf_int()[0],
+            '신뢰구간 상한(97.5%)': model.conf_int()[1]
+        })
+        result_table.index = ['절편'] + ['창의성', '문제해결력', '디지털_숙련도']
+        st.dataframe(result_table.round(4))
+        st.write(f'모델 결정계수 (R-squared): **{model.rsquared:.4f}**, 수정 결정계수 (Adj. R-squared): **{model.rsquared_adj:.4f}**')
+
+        fig, ax = plt.subplots()
+        sns.scatterplot(data=filtered_df, x='창의성', y='AI_활용', ax=ax)
+        ax.set_title('Creativity vs AI Utilization')
+        ax.set_xlabel('Creativity')
+        ax.set_ylabel('AI Utilization')
+        st.pyplot(fig)
+
+    elif page == '주제 2 (로지스틱)':
+        filtered_df = df.copy()
+        st.header('주제 2: 로지스틱 회귀분석')
+        st.write("디지털 윤리 의식과 자기주도적 학습 태도가 '고숙련 AI 사용자' 여부를 결정짓는가?")
+        st.write('종속변수: 고숙련 AI 사용자 여부 (AI 활용 점수 중앙값 이상일 경우 1, 미만일 경우 0)')
+        st.write('독립변수: 디지털 윤리(6번 항목), 자기관리 역량(10번 항목)')
+
+        X_log = filtered_df[['디지털_윤리', '자기관리']]
+        X_log = sm.add_constant(X_log)
+        y_log = filtered_df['고숙련_AI']
+        log_model = sm.Logit(y_log, X_log).fit(disp=False)
+
+        result_log = pd.DataFrame({
+            '계수': log_model.params,
+            '표준오차': log_model.bse,
+            'z값': log_model.tvalues,
+            'p값': log_model.pvalues,
+            '신뢰구간 하한(2.5%)': log_model.conf_int()[0],
+            '신뢰구간 상한(97.5%)': log_model.conf_int()[1],
+            '승산비(odds ratio)': np.exp(log_model.params)
+        })
+        result_log.index = ['절편'] + ['디지털_윤리', '자기관리']
+
+        st.write('로지스틱 회귀 결과:')
+        st.dataframe(result_log.round(4))
+        st.write(f'모델 정확도: **{(log_model.predict(X_log).round() == y_log).mean():.4f}**')
+
+        fig2, ax2 = plt.subplots()
+        sns.boxplot(data=filtered_df, x='고숙련_AI', y='디지털_윤리', ax=ax2)
+        ax2.set_title('High-skilled AI User vs Digital Ethics')
+        ax2.set_xlabel('High-skilled AI User')
+        ax2.set_ylabel('Digital Ethics')
+        st.pyplot(fig2)
+
+    elif page == 'What if':
+        st.header('실시간 예측 (What-if)')
+        st.write('슬라이더로 디지털 숙련도를 조절하며 AI 활용 점수를 예측합니다.')
+        
+        group_option = st.selectbox(
+            '그룹 필터',
+            ['전체', 'AI 활용 상위 50%', 'AI 활용 하위 50%', '디지털 숙련도 높음', '디지털 숙련도 낮음']
+        )
+
+        if group_option == '전체':
+            filtered_df = df.copy()
+        elif group_option in ['AI 활용 상위 50%', 'AI 활용 하위 50%']:
+            filtered_df = df[df['AI_활용_그룹'] == group_option]
+        else:
+            filtered_df = df[df['디지털_숙련도_그룹'] == group_option]
+        
+        digital_input = st.slider(
+            '디지털 숙련도 조절',
+            min_value=1.0,
+            max_value=5.0,
+            value=float(filtered_df['디지털_숙련도'].mean()),
+            step=0.1
+        )
+        mean_creativity = filtered_df['창의성'].mean()
+        mean_problem = filtered_df['문제해결력'].mean()
+        model_input = sm.add_constant(filtered_df[['창의성', '문제해결력', '디지털_숙련도']])
+        model_target = filtered_df['AI_활용']
+        try:
+            model = sm.OLS(model_target, model_input).fit()
+            pred_ai = (
+                model.params['const']
+                + model.params['창의성'] * mean_creativity
+                + model.params['문제해결력'] * mean_problem
+                + model.params['디지털_숙련도'] * digital_input
+            )
+            st.write(f'디지털 숙련도: {digital_input:.1f}일 때 예측 AI 활용 점수: **{pred_ai:.3f}**')
+
+            fig3, ax3 = plt.subplots()
+            x_values = np.arange(1.0, 5.01, 0.1)
+            y_values = (
+                model.params['const']
+                + model.params['창의성'] * mean_creativity
+                + model.params['문제해결력'] * mean_problem
+                + model.params['디지털_숙련도'] * x_values
+            )
+            ax3.plot(x_values, y_values, marker='o', markersize=3)
+            ax3.axvline(digital_input, color='red', linestyle='--', label='Current Digital Proficiency')
+            ax3.set_xlabel('Digital Proficiency')
+            ax3.set_ylabel('Predicted AI Utilization Score')
+            ax3.set_title('Predicted AI Utilization Score by Digital Proficiency')
+            ax3.legend()
+            st.pyplot(fig3)
+        except Exception as e:
+            st.error(f'모델 학습에 실패했습니다: {str(e)}. 데이터가 부족하거나 문제가 있을 수 있습니다.')
