@@ -150,6 +150,10 @@ with st.sidebar:
     for label in PAGE_LABELS:
         st.button(label, on_click=set_page, args=(label,))
 
+    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+    if st.button('메인화면으로'):
+        st.session_state.page = None
+
 page = st.session_state.page
 
 with st.container():
