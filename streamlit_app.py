@@ -359,7 +359,7 @@ with st.container():
         st.write('아래 폼을 통해 추가 자료를 제출하거나 피드백을 남겨주세요.')
         st.markdown('**설문 폼 주소:** [https://gogl.to/47zA](https://gogl.to/47zA)')
         st.subheader('설문지 질문 목록')
-        st.write('본 연구에서 활용된 설문지 질문들입니다.')
+        st.write('본 연구에서 활용된 설문지 질문들입니다. 다중선형 회귀와 로지스틱 회귀에 활용된 질문은 색칠되어 있습니다.')
         
         # CSV 컬럼 이름 추출 (질문들)
         questions = df.columns.tolist()
@@ -370,10 +370,22 @@ with st.container():
             '질문 내용': questions
         })
         
-        st.dataframe(questions_df.style.set_properties(**{
-            'background-color': 'rgba(255, 255, 255, 0.92)',
-            'color': '#0f172a',
+        # 색칠 함수
+        def highlight_used_questions(row):
+            question = row['질문 내용']
+            if any(q in question for q in ['1-1.', '1-2.', '1-3.', '1-4.']):  # 창의성
+                return ['background-color: #dbeafe'] * len(row)  # 파란색
+            elif any(q in question for q in ['3-1.', '3-2.', '3-3.', '3-4.']):  # 문제해결력
+                return ['background-color: #dbeafe'] * len(row)
+            elif any(q in question for q in ['4-1.', '4-2.', '4-3.', '4-4.']):  # 디지털_숙련도
+                return ['background-color: #dbeafe'] * len(row)
+            elif any(q in question for q in ['6-1.', '6-2.', '6-3.', '6-4.']):  # 디지털_윤리
+                return ['background-color: #fef3c7'] * len(row)  # 노란색
+            elif any(q in question for q in ['10-1.', '10-2.', '10-3.', '10-4.']):  # 자기관리
+                return ['background-color: #fef3c7'] * len(row)
+            else:
+                return [''] * len(row)
+        
+        st.dataframe(questions_df.style.apply(highlight_used_questions, axis=1).set_properties(**{
             'border': '1px solid rgba(148, 163, 184, 0.20)'
         }))
-        
-        components.iframe('https://gogl.to/47zA', height=800, scrolling=True)
