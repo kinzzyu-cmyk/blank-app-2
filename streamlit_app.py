@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
@@ -142,6 +143,7 @@ PAGE_BUTTONS = [
     ('📈 주제 1 (다중선형)', '주제 1 (다중선형)'),
     ('📉 주제 2 (로지스틱)', '주제 2 (로지스틱)'),
     ('🧠 What if', 'What if'),
+    ('📝 별첨', '별첨'),
 ]
 
 def set_page(page_name):
@@ -351,3 +353,8 @@ with st.container():
             st.pyplot(fig3)
         except Exception as e:
             st.error(f'모델 학습에 실패했습니다: {str(e)}. 데이터가 부족하거나 문제가 있을 수 있습니다.')
+
+    elif page == '별첨':
+        st.header('별첨')
+        st.write('아래 폼을 통해 추가 자료를 제출하거나 피드백을 남겨주세요.')
+        components.iframe('https://gogl.to/47zA', height=800, scrolling=True)
