@@ -76,33 +76,35 @@ st.markdown(
     <style>
     html, body, [class*="css"] {
         font-family: 'Nanum Gothic', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #334155 100%);
-        color: #f8fafc;
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%);
+        color: #0f172a;
     }
     .stApp {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #334155 100%);
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%);
     }
     .hero-card {
-        background: rgba(15, 23, 42, 0.92);
-        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(148, 163, 184, 0.30);
         border-radius: 24px;
         padding: 28px;
         margin-bottom: 24px;
+        color: #0f172a;
     }
     .section-card {
-        background: rgba(30, 41, 59, 0.86);
-        border: 1px solid rgba(148, 163, 184, 0.12);
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid rgba(148, 163, 184, 0.20);
         border-radius: 18px;
         padding: 22px;
         margin-bottom: 24px;
+        color: #0f172a;
     }
     .divider {
         height: 1px;
-        background: rgba(148, 163, 184, 0.18);
+        background: rgba(148, 163, 184, 0.30);
         margin: 24px 0;
     }
     .stTable table {
-        color: #f8fafc;
+        color: #0f172a;
     }
     </style>
     """,
