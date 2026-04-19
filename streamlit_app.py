@@ -177,20 +177,28 @@ with tab3:
     st.write("독립변수: 디지털 윤리(6번 항목), 자기관리 역량(10번 항목)")
 
     X_log = filtered_df[['디지털_윤리', '자기관리']]
+    X_log = sm.add_constant(X_log)
     y_log = filtered_df['고숙련_AI']
-    log_model = LogisticRegression()
-    log_model.fit(X_log, y_log)
+    log_model = sm.Logit(y_log, X_log).fit(disp=False)
+
+    result_log = pd.DataFrame({
+        '계수': log_model.params,
+        '표준오차': log_model.bse,
+        'z값': log_model.tvalues,
+        'p값': log_model.pvalues,
+        '신뢰구간 하한(2.5%)': log_model.conf_int()[0],
+        '신뢰구간 상한(97.5%)': log_model.conf_int()[1],
+        '승산비(odds ratio)': np.exp(log_model.params)
+    })
+    result_log.index = ['절편'] + ['디지털_윤리', '자기관리']
 
     st.write("로지스틱 회귀 결과:")
-    st.write(f"계수: {log_model.coef_}")
-    st.write(f"절편: {log_model.intercept_}")
-    st.write(f"정확도: {log_model.score(X_log, y_log)}")
+    st.dataframe(result_log.round(4))
+    st.write(f"모델 정확도: **{(log_model.predict(X_log).round() == y_log).mean():.4f}**")
 
     fig2, ax2 = plt.subplots()
     sns.boxplot(data=filtered_df, x='고숙련_AI', y='디지털_윤리', ax=ax2)
     ax2.set_title('High-skilled AI User vs Digital Ethics')
-    ax2.set_xlabel('High-skilled AI User')
-    ax2.set_ylabel('Digital Ethics')
     ax2.set_xlabel('High-skilled AI User')
     ax2.set_ylabel('Digital Ethics')
     st.pyplot(fig2)
