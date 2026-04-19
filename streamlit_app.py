@@ -357,4 +357,23 @@ with st.container():
     elif page == '별첨':
         st.header('별첨')
         st.write('아래 폼을 통해 추가 자료를 제출하거나 피드백을 남겨주세요.')
+        st.markdown('**설문 폼 주소:** [https://gogl.to/47zA](https://gogl.to/47zA)')
+        st.subheader('설문지 질문 목록')
+        st.write('본 연구에서 활용된 설문지 질문들입니다.')
+        
+        # CSV 컬럼 이름 추출 (질문들)
+        questions = df.columns.tolist()
+        
+        # 표로 정리
+        questions_df = pd.DataFrame({
+            '질문 번호': [f'Q{i+1}' for i in range(len(questions))],
+            '질문 내용': questions
+        })
+        
+        st.dataframe(questions_df.style.set_properties(**{
+            'background-color': 'rgba(255, 255, 255, 0.92)',
+            'color': '#0f172a',
+            'border': '1px solid rgba(148, 163, 184, 0.20)'
+        }))
+        
         components.iframe('https://gogl.to/47zA', height=800, scrolling=True)
